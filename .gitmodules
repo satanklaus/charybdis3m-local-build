@@ -1,3 +1,6 @@
 [submodule "zmk"]
 	path = zmk
 	url = https://github.com/zmkfirmware/zmk.git
+[submodule "zmk-keyboard-charybdis3m"]
+	path = zmk-keyboard-charybdis3m
+	url = https://github.com/satanklaus/zmk-keyboard-charybdis3m

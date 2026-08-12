@@ -21,3 +21,4 @@
 
 # TODO
     * SDK install guide
+    * freeze versions
