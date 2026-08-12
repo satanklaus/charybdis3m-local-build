@@ -4,3 +4,6 @@
 [submodule "zmk-keyboard-charybdis3m"]
 	path = zmk-keyboard-charybdis3m
 	url = https://github.com/satanklaus/zmk-keyboard-charybdis3m
+[submodule "zmk-config-charybdis3m"]
+	path = zmk-config-charybdis3m
+	url = https://github.com/satanklaus/zmk-config-charybdis3m
