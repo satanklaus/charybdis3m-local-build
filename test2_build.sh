@@ -14,7 +14,7 @@ for target in ${targets[*]}; do
 	echo --------------------------------$target; 
 	echo $PWD
 	mkdir -p ./build/$target &>/dev/null
-	west build -p -b nice_nano//zmk -d $builddir/build/$target -- -DSHIELD=$target -DZMK_EXTRA_MODULES=../../zmk-keyboard-charybdis3m/ -DZMK_CONFIG=../../zmk-config-charybdis3m/
+	west build -p -b nice_nano//zmk -d $builddir/build/$target -- -DSHIELD=$target -DZMK_EXTRA_MODULES=../../zmk-keyboard-charybdis3m/
 	echo 	BUILD STATUS: $?
 	cp $builddir/build/$target/zephyr/zmk.uf2 $builddir/artifacts/$target.uf2
 done
