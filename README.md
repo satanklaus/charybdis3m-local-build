@@ -1,17 +1,23 @@
-SDK install
-ZMK clean build
-ZMK clean charybdis3m build
-```bash
-export ZEPHYR_TOOLCHAIN_VARIANT="zephyr"
-```
+# PREREQUIREMENTS
 
-# reinstall bootloader
-If your device won't detect as keyboard anymore, but can be booted in DFU mode you should reset bootloader
-```bash
-#use venv!
-pip install adafruit-nrfutil
-# flash bootloader
-# replace serial port name and bootloader filename
-adafruit-nrfutil --verbose dfu serial --package nice_nano_bootloader-0.6.0_s140_6.1.1.zip -p /dev/ttyACM0 -b 115200 --singlebank --touch 1200
-#sometimes you need to flash an old verified firmware to device appear again as keyboard
-```
+    * zephyr sdk 0.16.9
+    * zmk v0.3-184-g268b1b1e
+
+# INSTALLATION
+
+    * #export ZEPHYR_SDK_INSTALL_DIR=/home/saiba/zephyr-sdk-0.16.9
+    * export ZEPHYR_TOOLCHAIN_VARIANT="zephyr"
+    * clone repo: git clone https://github.com/satanklaus/zmk-config-charybdis3m
+    * cd zmk-config-charybdis3m
+    * create venv: python -m venv venv
+    * activate: sourve venv/bin/activate
+    * install west (build application): pip install west
+    * init zephyr: west init -l config
+    * west update
+    * pip install -r zephyr/scripts/requirements.txt
+    * cd zmk/app
+    * west build -p -b nice_nano_v2 -- -DSHIELD=charybdis3m_right -DZMK_CONFIG=../../config
+    * west build -p -b nice_nano_v2 -- -DSHIELD=charybdis3m_left -DZMK_CONFIG=../../config
+
+# TODO
+    * SDK install guide
