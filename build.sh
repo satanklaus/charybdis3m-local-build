@@ -8,7 +8,7 @@ export ZEPHYR_TOOLCHAIN_VARIANT="zephyr"
 source venv/bin/activate
 cd zmk/app
 
-targets=(charybdis3m_left charybdis3m_right settings_reset)
+targets=(charybdis3m_left charybdis3m_right settings_reset charybdis3m_central)
 
 for target in ${targets[*]}; do 
 	echo --------------------------------$target; 
