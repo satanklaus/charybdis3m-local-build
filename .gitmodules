@@ -7,3 +7,6 @@
 [submodule "zmk-config-charybdis3m"]
 	path = zmk-config-charybdis3m
 	url = https://github.com/satanklaus/zmk-config-charybdis3m
+[submodule "zmk-behavior-pushbutton"]
+	path = zmk-behavior-pushbutton
+	url = https://github.com/satanklaus/zmk-behavior-pushbutton
