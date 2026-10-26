@@ -9,7 +9,7 @@ modules=(
 	"$root/zmk-keyboard-charybdis3m"
 	# "$root/zmk-behavior-pushbutton"  # enable once the module is finished
 )
-config="$root/zmk-config-charybdis3m"
+config="$root/zmk-config-charybdis3m/config"
 pristine=auto
 west_args=()
 out=artifacts
@@ -63,9 +63,16 @@ for target in "${targets[@]}"; do
 	echo "-------------------------------- $target"
 	artifact="$root/$out/$target.uf2"
 	rm -f "$artifact"
-	if west build -p "$pristine" "${west_args[@]}" -b nice_nano//zmk -d "$root/$build/$target" -- \
+	# west's -p auto misses changed cmake args (e.g. ZMK_CONFIG stays cached),
+	# so go pristine whenever they differ from the last build in this dir.
+	dir="$root/$build/$target"
+	args="${west_args[*]} ${cmake_args[*]}"
+	p=$pristine
+	[[ -f $dir/.build-args && $(<"$dir/.build-args") == "$args" ]] || p=always
+	if west build -p "$p" "${west_args[@]}" -b nice_nano//zmk -d "$dir" -- \
 		-DSHIELD="$target" "${cmake_args[@]}"; then
-		cp "$root/$build/$target/zephyr/zmk.uf2" "$artifact"
+		echo "$args" > "$dir/.build-args"
+		cp "$dir/zephyr/zmk.uf2" "$artifact"
 	else
 		failed+=("$target")
 	fi
