@@ -1,11 +1,16 @@
 #!/bin/bash
+# Create the Python venv and the west workspace inside zmk/. Safe to re-run.
+set -euo pipefail
 
-python -m venv venv
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+cd "$root"
+
+[[ -d venv ]] || python -m venv venv
 source venv/bin/activate
-pip install west
+pip install 'west>=1.5,<2'
+
 cd zmk
-west init -l app
-west update
-west packages pip --install
+[[ -d .west ]] || west init -l app
+west update --narrow -o=--depth=1
 west zephyr-export
-pip install -r zephyr/scripts/requirements.txt
+west packages pip --install
