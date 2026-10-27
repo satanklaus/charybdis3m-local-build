@@ -9,6 +9,8 @@ modules=(
 	"$root/zmk-keyboard-charybdis3m"
 	"$root/zmk-behavior-pushbutton"
 )
+extra_modules=()            # appended by build.local.sh, if present
+declare -A extra_conf       # target -> extra .conf file, set by build.local.sh
 config="$root/zmk-config-charybdis3m/config"
 pristine=auto
 west_args=()
@@ -47,6 +49,13 @@ while (($#)); do
 done
 ((${#targets[@]})) || targets=("${all_targets[@]}")
 
+# Optional, gitignored local overrides: may append to extra_modules and set
+# extra_conf[<target>]=<file>. Skipped for --stock (no extra modules).
+if ((${#modules[@]})) && [[ -f "$root/build.local.sh" ]]; then
+	source "$root/build.local.sh"
+	modules+=("${extra_modules[@]}")
+fi
+
 cmake_args=()
 if ((${#modules[@]})); then
 	cmake_args+=("-DZMK_EXTRA_MODULES=$(IFS=';'; echo "${modules[*]}")")
@@ -67,13 +76,16 @@ for target in "${targets[@]}"; do
 	# so go pristine whenever they differ from the last build in this dir.
 	dir="$root/$build/$target"
 	target_args=("${west_args[@]}")
+	target_cmake=("${cmake_args[@]}")
 	# ZMK Studio talks to the central over USB
 	[[ $target == charybdis3m_central && -n $config ]] && target_args+=(-S studio-rpc-usb-uart)
-	args="${target_args[*]} ${cmake_args[*]}"
+	# Per-target extra config from build.local.sh, if any
+	[[ -n ${extra_conf[$target]:-} ]] && target_cmake+=("-DEXTRA_CONF_FILE=${extra_conf[$target]}")
+	args="${target_args[*]} ${target_cmake[*]}"
 	p=$pristine
 	[[ -f $dir/.build-args && $(<"$dir/.build-args") == "$args" ]] || p=always
 	if west build -p "$p" "${target_args[@]}" -b nice_nano//zmk -d "$dir" -- \
-		-DSHIELD="$target" "${cmake_args[@]}"; then
+		-DSHIELD="$target" "${target_cmake[@]}"; then
 		echo "$args" > "$dir/.build-args"
 		cp "$dir/zephyr/zmk.uf2" "$artifact"
 	else
