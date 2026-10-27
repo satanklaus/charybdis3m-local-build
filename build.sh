@@ -66,10 +66,13 @@ for target in "${targets[@]}"; do
 	# west's -p auto misses changed cmake args (e.g. ZMK_CONFIG stays cached),
 	# so go pristine whenever they differ from the last build in this dir.
 	dir="$root/$build/$target"
-	args="${west_args[*]} ${cmake_args[*]}"
+	target_args=("${west_args[@]}")
+	# ZMK Studio talks to the central over USB
+	[[ $target == charybdis3m_central && -n $config ]] && target_args+=(-S studio-rpc-usb-uart)
+	args="${target_args[*]} ${cmake_args[*]}"
 	p=$pristine
 	[[ -f $dir/.build-args && $(<"$dir/.build-args") == "$args" ]] || p=always
-	if west build -p "$p" "${west_args[@]}" -b nice_nano//zmk -d "$dir" -- \
+	if west build -p "$p" "${target_args[@]}" -b nice_nano//zmk -d "$dir" -- \
 		-DSHIELD="$target" "${cmake_args[@]}"; then
 		echo "$args" > "$dir/.build-args"
 		cp "$dir/zephyr/zmk.uf2" "$artifact"
