@@ -7,7 +7,7 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 all_targets=(charybdis3m_left charybdis3m_right settings_reset charybdis3m_central)
 modules=(
 	"$root/zmk-keyboard-charybdis3m"
-	# "$root/zmk-behavior-pushbutton"  # enable once the module is finished
+	"$root/zmk-behavior-pushbutton"
 )
 config="$root/zmk-config-charybdis3m/config"
 pristine=auto
