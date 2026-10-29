@@ -1,2 +1,5 @@
 build/
 artifacts/
+
+# Private, local-only modules (auto-included by build.sh, never committed)
+/zmk-module-*/

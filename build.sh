@@ -9,8 +9,6 @@ modules=(
 	"$root/zmk-keyboard-charybdis3m"
 	"$root/zmk-behavior-pushbutton"
 )
-extra_modules=()            # appended by build.local.sh, if present
-declare -A extra_conf       # target -> extra .conf file, set by build.local.sh
 config="$root/zmk-config-charybdis3m/config"
 pristine=auto
 west_args=()
@@ -49,11 +47,21 @@ while (($#)); do
 done
 ((${#targets[@]})) || targets=("${all_targets[@]}")
 
-# Optional, gitignored local overrides: may append to extra_modules and set
-# extra_conf[<target>]=<file>. Skipped for --stock (no extra modules).
-if ((${#modules[@]})) && [[ -f "$root/build.local.sh" ]]; then
-	source "$root/build.local.sh"
-	modules+=("${extra_modules[@]}")
+# Auto-include local modules: any zmk-module-*/ that is a Zephyr module and is
+# not a registered git submodule. Private modules are gitignored and picked up
+# here by this naming convention, so no tracked bootstrap file is needed. A
+# local module may also ship a <target>.conf, applied per target below.
+# Skipped for --stock (no extra modules).
+local_modules=()
+if ((${#modules[@]})); then
+	submodule_paths=$(sed -n 's/^[[:space:]]*path = //p' "$root/.gitmodules" 2>/dev/null || true)
+	for d in "$root"/zmk-module-*/; do
+		[[ -f ${d}zephyr/module.yml ]] || continue
+		name=${d#"$root/"}; name=${name%/}
+		grep -qxF "$name" <<<"$submodule_paths" && continue   # skip submodules
+		local_modules+=("${d%/}")
+	done
+	((${#local_modules[@]})) && modules+=("${local_modules[@]}")
 fi
 
 cmake_args=()
@@ -79,8 +87,12 @@ for target in "${targets[@]}"; do
 	target_cmake=("${cmake_args[@]}")
 	# ZMK Studio talks to the central over USB
 	[[ $target == charybdis3m_central && -n $config ]] && target_args+=(-S studio-rpc-usb-uart)
-	# Per-target extra config from build.local.sh, if any
-	[[ -n ${extra_conf[$target]:-} ]] && target_cmake+=("-DEXTRA_CONF_FILE=${extra_conf[$target]}")
+	# A local module may ship a <target>.conf fragment (e.g. central-only config)
+	conf_files=()
+	for m in "${local_modules[@]}"; do
+		[[ -f $m/$target.conf ]] && conf_files+=("$m/$target.conf")
+	done
+	((${#conf_files[@]})) && target_cmake+=("-DEXTRA_CONF_FILE=$(IFS=';'; echo "${conf_files[*]}")")
 	args="${target_args[*]} ${target_cmake[*]}"
 	p=$pristine
 	[[ -f $dir/.build-args && $(<"$dir/.build-args") == "$args" ]] || p=always
