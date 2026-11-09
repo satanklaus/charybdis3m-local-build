@@ -8,6 +8,7 @@ all_targets=(charybdis3m_left charybdis3m_right settings_reset charybdis3m_centr
 modules=(
 	"$root/zmk-keyboard-charybdis3m"
 	"$root/zmk-behavior-pushbutton"
+	"$root/zmk-feedback-haptic"
 )
 config="$root/zmk-config-charybdis3m/config"
 pristine=auto

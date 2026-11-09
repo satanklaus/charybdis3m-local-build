@@ -10,3 +10,6 @@
 [submodule "zmk-behavior-pushbutton"]
 	path = zmk-behavior-pushbutton
 	url = https://github.com/satanklaus/zmk-behavior-pushbutton
+[submodule "zmk-feedback-haptic"]
+	path = zmk-feedback-haptic
+	url = git@github.com:satanklaus/zmk-feedback-haptic.git
