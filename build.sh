@@ -9,6 +9,7 @@ modules=(
 	"$root/zmk-keyboard-charybdis3m"
 	"$root/zmk-behavior-pushbutton"
 	"$root/zmk-feedback-haptic"
+	"$root/zmk-feedback-buzzer"
 )
 config="$root/zmk-config-charybdis3m/config"
 pristine=auto

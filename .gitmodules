@@ -13,3 +13,6 @@
 [submodule "zmk-feedback-haptic"]
 	path = zmk-feedback-haptic
 	url = git@github.com:satanklaus/zmk-feedback-haptic.git
+[submodule "zmk-feedback-buzzer"]
+	path = zmk-feedback-buzzer
+	url = git@github.com:satanklaus/zmk-feedback-buzzer.git
